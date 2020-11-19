@@ -41,6 +41,7 @@ const ModalContainer = ({open,handleClose,postInfo}) => {
 
             await postsApi.editPost(JSON.stringify(put),postInfo[0])
             setEdit(false)
+            handleClose(false)
         }
     }
 
