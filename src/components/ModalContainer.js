@@ -1,47 +1,47 @@
-import React, {useState} from 'react'
-import {makeStyles} from '@material-ui/core';
+import React,{useState,useEffect} from 'react'
+
 import Modal from '@material-ui/core/Modal';
+import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
+import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 
 import postsApi from '../utils/requests'
 
-const AddComment = () => {
-    
-    const [loading, setLoading] = useState(false)
+const ModalContainer = ({open,handleClose,postInfo}) => {
 
-    const [open, setOpen] = useState(false);
+    const[edit, setEdit] = useState(false)
 
     const [userId, setUserId] = useState('');
     const [title, setTitle] = useState('');
     const [body, setBody] = useState('');
 
-    const handleOpen = () => {
-        setOpen(true);
-    };
-    
-    const handleClose = () => {
-        setOpen(false);
-    };
+    useEffect(() => {
+       if(!edit){
+            setUserId(postInfo[1])
+            setTitle(postInfo[2])
+            setBody(postInfo[3])
+       }
+    }, [edit, postInfo])
 
     const handleSubmit = async (e) => {
         e.preventDefault()
+        setEdit(true)
 
-        const post = {
-            userId,
-            title,
-            body
+        if(edit){
+            const put = {
+                id: postInfo[0],
+                title,
+                body,
+                userId,
+            }
+
+            await postsApi.editPost(JSON.stringify(put),postInfo[0])
+            setEdit(false)
         }
-        
-        await postsApi.addPost(JSON.stringify(post))
-
-        setUserId('')
-        setTitle('')
-        setBody('')
-        setOpen(false);
     }
 
     const useStyles = makeStyles({
@@ -67,6 +67,15 @@ const AddComment = () => {
             left: '50%',
             background: '#fff'
         },
+        textArea: {
+            width: '100%',
+            boxSizing: 'border-box', 
+            border: 'solid 1px #C6C4C6',
+            borderRadius: '5px',
+            padding: '15px',
+            fontSize: '17px',
+            color:'#232123'
+        },
         form: {
             width: '100%', // Fix IE 11 issue.
         },
@@ -74,72 +83,68 @@ const AddComment = () => {
 
     const classes = useStyles()
 
+
     return (
-        <>
-            <Button className={classes.button} onClick={handleOpen}>Add Post</Button>
-            <Modal
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="simple-modal-title"
-                aria-describedby="simple-modal-description"
+        <Modal
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="simple-modal-title"
+            aria-describedby="simple-modal-description"
             >
-                <Container component="main" maxWidth="xs">
+            <Container component="main" maxWidth="xs">
                     <div className={classes.paper}>
                         <Typography component="h3" variant="h3" style={{padding:'40px 0',textAlign:'center'}}>
-                        Add Comment
+                        {edit ? 'Edit Post' : 'Post Info' }
                         </Typography>
                         <form className={classes.form} onSubmit={handleSubmit}>
                         <Grid container spacing={2}>
                         <Grid item xs={12}>
                             <TextField
+                                style={!edit ? {pointerEvents:'none'} : {pointerEvents:'auto'}}
                                 variant="outlined"
-                                required
                                 fullWidth
                                 id="userId"
                                 label="UserId"
                                 name="userId"
-                                onChange={(e)=>{setUserId(e.target.value)}}
                                 value={userId}
-            
+                                onChange={(e)=>{setUserId(e.target.value)}}
                             />
                             </Grid>
                             <Grid item xs={12}>
                             <TextField
                                 variant="outlined"
-                                required
                                 fullWidth
                                 id="title"
                                 label="Title"
                                 name="title"
-                                onChange={(e)=>{setTitle(e.target.value)}}
                                 value={title}
+                                onChange={(e)=>{setTitle(e.target.value)}}
+                                style={!edit ? {pointerEvents:'none'} : {pointerEvents:'auto'}}
                             />
                             </Grid>
                             <Grid item xs={12}>
                             </Grid>
                             <Grid item xs={12}>
-                            <TextField
+                            <TextareaAutosize className={classes.textArea}
                                 variant="outlined"
-                                required
-                                fullWidth
                                 name="text"
                                 label="Text"
                                 type="text"
                                 id="text"
-                                onChange={(e)=>{setBody(e.target.value)}}
                                 value={body}
+                                onChange={(e)=>{setBody(e.target.value)}}
+                                style={!edit ? {pointerEvents:'none'} : {pointerEvents:'auto'}}
                             />
                             </Grid>
                         </Grid>
-                        <Button className={classes.button} type="submit">Add Post</Button>
+                        <Button className={classes.button} type="submit">{edit ? 'Put Post' : 'Edit Post'}</Button>
                         <Grid container justify="flex-end">
                         </Grid>
                         </form>
                     </div>
                 </Container>
-            </Modal>
-        </>
+        </Modal>
     )
 }
 
-export default AddComment
+export default ModalContainer

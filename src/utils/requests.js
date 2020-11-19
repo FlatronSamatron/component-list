@@ -6,9 +6,14 @@ const postsApi = {
         return data
     },
     async addPost (post) {
-        const {data} = await axios.post('http://jsonplaceholder.typicode.com/posts', post)
-        console.log(data)
-        return data
+        const req = await axios.post('http://jsonplaceholder.typicode.com/posts', post)
+        console.log(req)
+        return req.data
+    },
+    async editPost (put,id) {
+        const req = await axios.put(`http://jsonplaceholder.typicode.com/posts/${id}`, put)
+        console.log(req)
+        return req.data
     }
 }
 

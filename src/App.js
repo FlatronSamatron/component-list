@@ -1,5 +1,5 @@
 import React,{useState, useEffect} from 'react'
-import { Input, Container, Grid, makeStyles, CircularProgress } from '@material-ui/core';
+import { Input, Container, Grid, CircularProgress } from '@material-ui/core';
 
 import TabeList from './components/TableList'
 import AddComment from './components/AddComment'
@@ -22,7 +22,7 @@ function App() {
   }, [])
 
   const filterSearch = ( el, value ) => {
-    return el.toString().toLowerCase().trim().indexOf(value.toString().toLowerCase().trim()) > -1
+    return el.toString().toLowerCase().trim().includes(value.toString().toLowerCase().trim())
   }
   
   const search = (value) => {
@@ -33,15 +33,6 @@ function App() {
 
       setSearchData(result)
   }
-
-  const useStyles = makeStyles((theme) => ({
-    root: {
-      display: 'flex',
-      '& > * + *': {
-        marginLeft: theme.spacing(2),
-      },
-    },
-  }));
 
   
   return (
