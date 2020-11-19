@@ -10,8 +10,6 @@ import Container from '@material-ui/core/Container';
 import postsApi from '../utils/requests'
 
 const AddComment = () => {
-    
-    const [loading, setLoading] = useState(false)
 
     const [open, setOpen] = useState(false);
 
